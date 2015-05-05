@@ -11,9 +11,17 @@ module VagrantPlugins
                                name: env[:machine].box.name)
 
           # Import the virtual machine
-          box_directory = env[:machine].box.directory
-          vmx_source = box_directory.join(Dir[box_directory + "\*.vmxf"].first).to_s
-          env[:machine].id = env[:machine].provider.driver.clone_vm(vmx_source) do |progress|
+          data_dir = env[:machine].data_dir
+          if ENV.has_key?("VAGRANT_VMWARE_CLONE_DIRECTORY")
+            env_dir = Pathname.new(ENV["VAGRANT_VMWARE_CLONE_DIRECTORY"])
+            data_dir = env_dir if env_dir.directory?
+          end
+          vmx_output = data_dir.join(env[:machine].name.to_s).join(env[:machine].name.to_s + ".vmx").to_s
+
+          box_dir = env[:machine].box.directory
+          vmx_source = box_dir.join(Dir[box_dir + "\*.vmxf"].first).to_s
+
+          env[:machine].id = env[:machine].provider.driver.clone_vm(vmx_source, vmx_output) do |progress|
             env[:ui].clear_line
             env[:ui].report_progress(progress, 100, false)
           end

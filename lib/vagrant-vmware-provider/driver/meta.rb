@@ -30,25 +30,16 @@ module VagrantPlugins
           super()
 
           @logger = Log4r::Logger.new("vagrant::provider::vmware::meta")
-          @vmx_file = vmx_file
+          @vmx_file = Pathname.new(vmx_file) if vmx_file
 
           # Read and assign the version of VirtualBox we know which
           # specific driver to instantiate.
-#          begin
-#            @version = read_version || ""
-#          rescue Vagrant::Errors::CommandUnavailable,
-#            Vagrant::Errors::CommandUnavailableWindows
-#            # This means that VirtualBox was not found, so we raise this
-#            # error here.
-#            raise Vagrant::Errors::VirtualBoxNotDetected
-#          end
-
           driver_klass = Version_7_0
 
           @logger.info("Using VMWare driver: #{driver_klass}")
           @driver = driver_klass.new(@vmx_file)
 
-          if @uuid
+          if @vmx_file
             # Verify the VM exists, and if it doesn't, then don't worry
             # about it (mark the UUID as nil)
             raise VMNotFound if !@driver.vm_exists?(@vmx_file)

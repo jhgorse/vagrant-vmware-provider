@@ -40,16 +40,16 @@ module VagrantPlugins
       # If the machine ID changed, then we need to rebuild our underlying
       # driver.
       def machine_id_changed
-        vmx_file = @machine.data_dir.join(@machine.name.to_s).join(@machine.name.to_s + ".vmx")
+        id = @machine.id
 
         begin
           @logger.debug("Instantiating the driver for machine ID: #{@machine.id.inspect}")
-          @driver = Driver::Meta.new(vmx_file)
+          @driver = Driver::Meta.new(id)
         rescue Driver::Meta::VMNotFound
           # The virtual machine doesn't exist, so we probably have a stale
           # ID. Just clear the id out of the machine and reload it.
           @logger.debug("VM not found! Clearing saved machine ID and reloading.")
-          vmx_file = nil
+          id = nil
           retry
         end
       end

@@ -13,22 +13,23 @@ module VagrantPlugins
           super()
 
           @logger = Log4r::Logger.new("vagrant::provider::vmware_7_0")
-          @vmx_file = vmx_file
+          @vmx_file = Pathname.new(vmx_file) if vmx_file
         end
 
         def delete
           execute("deleteVM", @vmx_file.to_s)
         end
 
-        def clone_vm(ovf)
-          ovf = Vagrant::Util::Platform.cygwin_windows_path(ovf)
+        def clone_vm(vmx_source, vmx_output)
+          vmx_source = Vagrant::Util::Platform.cygwin_windows_path(vmx_source)
 
+          @vmx_file = Pathname.new(vmx_output)
           @vmx_file.dirname.mkpath()
 
           output = ""
           total = ""
           last  = 0
-          execute("clone", ovf, @vmx_file.to_s, "linked") do |type, data|
+          execute("clone", vmx_source, @vmx_file.to_s, "linked") do |type, data|
             if type == :stdout
               # Keep track of the stdout so that we can get the VM name
               output << data
@@ -45,12 +46,11 @@ module VagrantPlugins
         end
 
         def read_state
-          vmx_filename = @vmx_file.to_s
           return :not_created if !vm_exists?(@vmx_file)
           output = execute("list")
-          return :running if output =~ /#{vmx_filename}/
+          return :running if output =~ /#{@vmx_file}/
 
-          vmx = Driver::VMX.new(vmx_filename)
+          vmx = Driver::VMX.new(@vmx_file)
           return :is_saved if vmx.data.has_key?("checkpoint.vmState")
           return :not_running
           nil
