@@ -20,19 +20,14 @@ module VagrantPlugins
         def read_ssh_info(env)
           return nil if env[:machine].id.nil?
 
-          #have to wait!
-          host_ip = nil
-
-          while !host_ip || host_ip == "" do
-            #we should make this into a middleware that sets the machine file? maybe?
-            vmpath = env[:machine].box.directory
-            machine_vmx_file = vmpath.join(Dir[vmpath + "\*.vmxf"].first).to_s
-            vmrun_results = `#{ENV['VM_RUN_PATH']} -T ws readVariable \"#{machine_vmx_file}\" guestVar ip`
-            # read attribute override
-            host_ip = vmrun_results.gsub!("\n","")
+          address = env[:machine].provider.driver.ssh_info()
+          if not address or address == ''
+            @logger.debug("could not find booted guest ip address")
           end
+          
+          env[:nfs_machine_ip] = address
 
-          return { :host => host_ip, :port => 22 }
+          return { :host => address, :port => 22 }
         end
       end
     end

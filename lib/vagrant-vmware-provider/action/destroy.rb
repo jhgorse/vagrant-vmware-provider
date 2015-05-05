@@ -1,15 +1,16 @@
 module VagrantPlugins
   module VMwareProvider
     module Action
-      # This can be used with "Call" built-in to check if the machine
-      # is stopped and branch in the middleware.
-      class IsStopped
+      class Destroy
         def initialize(app, env)
           @app = app
         end
 
         def call(env)
-          env[:result] = env[:machine].state.id == :stopped
+          env[:ui].info I18n.t("vagrant.actions.vm.destroy.destroying")
+          env[:machine].provider.driver.delete
+          env[:machine].id = nil
+
           @app.call(env)
         end
       end
