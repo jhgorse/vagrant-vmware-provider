@@ -13,7 +13,7 @@ module VagrantPlugins
 
           pp @env[:machine].provider_config
           pp @env[:machine].provider_config.gui
-          boot_mode = @env[:machine].provider_config.gui.nil? ? "nogui" : "gui"
+          boot_mode = @env[:machine].provider_config.gui ? "gui" : "nogui"
 
           # Start up the VM and wait for it to boot.
           env[:ui].info I18n.t("vagrant.actions.vm.boot.booting")

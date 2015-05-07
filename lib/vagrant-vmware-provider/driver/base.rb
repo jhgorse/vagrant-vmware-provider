@@ -101,29 +101,7 @@ module VagrantPlugins
             if r.exit_code != 0
               if @interrupted
                 @logger.info("Exit code != 0, but interrupted. Ignoring.")
-              elsif r.exit_code == 126
-                # This exit code happens if VBoxManage is on the PATH,
-                # but another executable it tries to execute is missing.
-                # This is usually indicative of a corrupted VirtualBox install.
-                raise Vagrant::Errors::VBoxManageNotFoundError
               else
-                errored = true
-              end
-            else
-              # Sometimes, VBoxManage fails but doesn't actual return a non-zero
-              # exit code. For this we inspect the output and determine if an error
-              # occurred.
-
-              if r.stderr =~ /failed to open \/dev\/vboxnetctl/i
-                # This catches an error message that only shows when kernel
-                # drivers aren't properly installed.
-                @logger.error("Error message about unable to open vboxnetctl")
-                raise Vagrant::Errors::VirtualBoxKernelModuleNotLoaded
-              end
-
-              if r.stderr =~ /VBoxManage([.a-z]+?): error:/
-                # This catches the generic VBoxManage error case.
-                @logger.info("VBoxManage error text found, assuming error.")
                 errored = true
               end
             end
@@ -133,7 +111,8 @@ module VagrantPlugins
             if errored
               raise Vagrant::Errors::VBoxManageError,
                 command: command.inspect,
-                stderr:  r.stderr
+                stderr:  r.stderr,
+                stdout:  r.stdout
             end
           end
 

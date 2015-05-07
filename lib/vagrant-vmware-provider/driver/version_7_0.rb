@@ -17,6 +17,7 @@ module VagrantPlugins
         end
 
         def delete
+          sleep(5)
           execute("deleteVM", @vmx_file.to_s)
         end
 
