@@ -42,6 +42,12 @@ module VagrantPlugins
           return @vmx_file.to_s
         end
 
+        def customize(key, value)
+          vmx = Driver::VMX.new(@vmx_file)
+          vmx.data[key] = value
+          vmx.save()
+        end
+
         def halt
           execute("stop", @vmx_file.to_s, "hard")
         end

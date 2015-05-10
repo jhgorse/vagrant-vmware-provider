@@ -9,6 +9,7 @@ module VagrantPlugins
       autoload :CheckRunning, File.expand_path("../action/check_running", __FILE__)
       autoload :CheckVMware, File.expand_path("../action/check_vmware", __FILE__)
       autoload :Created, File.expand_path("../action/created", __FILE__)
+      autoload :Customize, File.expand_path("../action/customize", __FILE__)
       autoload :Destroy, File.expand_path("../action/destroy", __FILE__)
       autoload :ForcedHalt, File.expand_path("../action/forced_halt", __FILE__)
       autoload :Import, File.expand_path("../action/import", __FILE__)
@@ -34,13 +35,10 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use CheckAccessible
           b.use SetHostname
-#          b.use Customize, "pre-boot"
+          b.use Customize
           b.use Boot
           b.use Provision
           b.use SyncedFolders
-#          b.use Customize, "post-boot"
-#          b.use WaitForCommunicator, [:starting, :running]
-#          b.use Customize, "post-comm"
         end
       end
 
@@ -291,9 +289,8 @@ module VagrantPlugins
             # If the VM is NOT created yet, then do the setup steps
             if !env[:result]
               b2.use CheckAccessible
-#              b2.use Customize, "pre-import"
               b2.use Import
-#              b2.use MatchMACAddress
+              b2.use Customize
             end
           end
           b.use action_start
