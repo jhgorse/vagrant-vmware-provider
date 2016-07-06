@@ -18,9 +18,21 @@ module VagrantPlugins
         require File.expand_path("../config", __FILE__)
         Config
       end
+      provider(:vmware_fusion) do
+        require File.expand_path("../provider", __FILE__)
+        Provider
+      end
+      config(:vmware_fusion, :provider) do
+        require File.expand_path("../config", __FILE__)
+        Config
+      end
 
       # Add vagrant share support
       provider_capability('vmware_desktop', 'public_address') do
+        require_relative 'cap/public_address'
+        Cap::PublicAddress
+      end
+      provider_capability('vmware_fusion', 'public_address') do
         require_relative 'cap/public_address'
         Cap::PublicAddress
       end
