@@ -24,7 +24,7 @@ module VagrantPlugins
           # This flag is used to keep track of interrupted state (SIGINT)
           @interrupted = false
 
-          # Set the path to VBoxManage
+          # Set the path to vmrun
           @vmrun_path = "vmrun"
 
           if Vagrant::Util::Platform.windows? || Vagrant::Util::Platform.cygwin?
@@ -53,6 +53,8 @@ module VagrantPlugins
                 end
               end
             end
+          elsif Vagrant::Util::Platform.darwin?
+            @vmrun_path = "/Applications/VMware Fusion.app/Contents/Library/vmrun"
           else
             @vmrun_path = ENV['VM_RUN_PATH']
           end
