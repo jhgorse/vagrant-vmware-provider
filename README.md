@@ -1,13 +1,15 @@
 Vagrant VMware Provider.
 
 This is a free alternative to HashiCorp's paid for VMWare Fusion/Desktop provider.
-So far it should support:
+
+Requirements: Fusion Pro 7
+
+Features:
 - Customizing VAGRANT_VMWARE_CLONE_DIRECTORY
 - Basic VMX customizations (same way as in the manual)
 
 Not supported yet:
 - Shared folders (rsync only)
-
 
 Zero testing on Windows, but works okay here with VMware Fusion 7.1.1.
 
