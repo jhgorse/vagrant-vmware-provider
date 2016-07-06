@@ -14,6 +14,13 @@ module VagrantPlugins
         @vmx = {}
       end
 
+      def memory=(size)
+        # TODO: vmrun writeVariable "path_to.vmx" runtimeConfig memsize size.to_s
+        # vbox: customize("pre-boot", ["modifyvm", :id, "--memory", size.to_s])
+        #VagrantPlugins::VMwareProvider::Base::execute("writeVariable", @vmx, "runtimeConfig memsize ", size.to_s)
+      end
+
+
       def merge(other)
         super.tap do |result|
           vmx = {}
@@ -30,7 +37,7 @@ module VagrantPlugins
       def validate(machine)
         {"VMware Provider" => _detected_errors}
       end
-      
+
       private
     end
   end
